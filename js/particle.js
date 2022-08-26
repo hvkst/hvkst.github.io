@@ -28,10 +28,8 @@ class SpecialParticle {
 
     let distance = dist(this.x, this.y, player.x, player.y);
 
-    // fill(0);
-    // textSize(15);
-    // textAlign(CENTER);
-    // text(`${round(distance)}`, this.x, this.y);
+    if (this.y > height + 20) this.collided = true;
+
     if (distance < 300) {
       this.x += random(-1, 1);
       this.y += random(-1, 1);
@@ -50,9 +48,10 @@ class ShrinkParticle extends SpecialParticle {
     this.y = y;
     this.d = d;
     this.morphAmmount = morphAmmount;
-    this.g = 200;
+    this.g = 230;
     this.sound = minimize;
   }
+  // super update here with colorChange on this.g???
 }
 
 class GrowParticle extends SpecialParticle {
@@ -62,12 +61,10 @@ class GrowParticle extends SpecialParticle {
     this.y = y;
     this.d = d;
     this.morphAmmount = -morphAmmount;
-    this.r = 200;
+    this.r = 230;
     this.sound = maximize;
   }
 }
-
-// movIt Function would be good here
 
 class RandomParticle {
   constructor() {
@@ -82,12 +79,12 @@ class RandomParticle {
 
   update() {
     strokeWeight(1);
-    fill(255, 0, 255, colorChange / 6);
+    fill(200, 200, 0, colorChange / 2 - 20);
     circle(this.x, this.y, this.d);
 
     let hit = collideCircleCircle(this.x, this.y, this.d, player.x, player.y, player.d);
     if (hit) {
-      slime.play();
+      bop.play();
       this.collided = true;
       score++;
     }

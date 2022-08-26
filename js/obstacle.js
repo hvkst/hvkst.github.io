@@ -40,7 +40,7 @@ class Obstacle {
 }
 
 class LevelFinish extends Obstacle {
-  constructor(x, y, w, h, t, thingsArrayDotLength) {
+  constructor(x, y, w, h, t, thingsArrayDotLength, levelUp) {
     super(x, y, w, h);
     this.x = x;
     this.y = y;
@@ -48,6 +48,7 @@ class LevelFinish extends Obstacle {
     this.h = h;
     this.trigger = t;
     this.thingsArrayDotLength = thingsArrayDotLength;
+    this.levelUp = levelUp; // Levelcounter goes up | 1 or 0
     this.r = 160;
     this.g = 100;
     this.b = 0;
@@ -59,41 +60,72 @@ class LevelFinish extends Obstacle {
     if (hit && player.baseD == this.trigger && thingsArray.length < this.thingsArrayDotLength) {
       this.collided = true;
       succes.play();
-      levelCounter++;
-      if (toggle == true) {
-        toggle = false;
-      } else toggle = true;
+      levelCounter += this.levelUp;
+      if (this.levelUp) {
+        toggle = true;
+      }
+      // if (toggle == true) {
+      //   toggle = false;
+      // } else toggle = true;
     }
   }
 }
 
 class TextInfo {
-  constructor(x, y, w, h, s, ss) {
+  constructor(x, y, w, h, s, tw, extra) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.s = s;
-    this.ss = ss;
-    this.past = false;
+    this.s = s; // String
+    this.tw = tw; // TextWrap
+    this.extra = extra; // optional for extra adjustments
   }
 
   update() {
-    // fill(50);
-    fill(80, 40, 80);
+    push();
+    strokeWeight(1);
+    noStroke();
+
+    drawingContext.shadowBlur = 5;
+    drawingContext.shadowColor = "yellow";
+
+    // fill(255, 255);
+    // rect(this.x - 2, this.y - 2, this.w + 4, this.h + 4, 20);
+    fill(0);
     rect(this.x, this.y, this.w, this.h, 20);
+    pop();
     fill(255);
-    textSize(30);
+    textSize(25);
     textWrap(WORD);
     textAlign(CENTER, CENTER);
-    text(`${this.s}`, this.x, this.y + this.h / 2, this.ss);
+    text(`${this.s}`, this.x + this.extra, this.y + this.h / 2, this.tw);
 
-    if (gameStarted) this.y += gameSpeed * 0.2;
+    // if (gameStarted) this.y += gameSpeed * 0.2;
+
+    if (gameStarted) {
+      this.y += gameSpeed * 0.2;
+    }
 
     let hit = collideRectCircle(this.x, this.y, this.w, this.h, player.x, player.y, player.d);
     if (hit) {
       infobop.play();
       this.collided = true;
+    }
+  }
+
+  move() {
+    if (gameStarted) {
+      this.y += gameSpeed * 0.2;
+    }
+    if (player.grow) {
+      this.x += random(-0.5, 0.5);
+      this.y += random(-0.5, 0);
+    }
+
+    if (!player.grow) {
+      this.x += random(-0.5, 0.5);
+      this.y += random(0, 0.5);
     }
   }
 }
@@ -119,7 +151,7 @@ class MovingObstacle extends Obstacle {
 
   update() {
     fill(this.r, this.g, this.b);
-    rect(this.x, this.y, this.w, this.h, 10);
+    rect(this.x, this.y, this.w, this.h);
     let hit = collideRectCircle(this.x, this.y, this.w, this.h, player.x, player.y, player.d);
     if (hit) gameOver = true;
 
